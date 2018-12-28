@@ -1,0 +1,55 @@
+version: 2
+jobs:
+
+  test-3.6:
+    docker:
+      - image: circleci/python:3.6.1
+    environment:
+      COVERALLS_REPO_TOKEN
+      COVERALLS_PARALLEL
+    steps:
+      - checkout
+      - run:
+          name: prep
+          command: |
+            sudo pip3 install --upgrade pip tox coveralls
+      - run:
+          name: test
+          command: |
+            tox -e py36
+            coveralls
+    notify:
+      webhooks:
+        - url: https://coveralls.io/webhook?repo_token=$COVERALLS_REPO_TOKEN
+    post:
+      - coveralls
+
+  test-3.7:
+    docker:
+      - image: circleci/python:3.7.0
+    environment:
+      COVERALLS_REPO_TOKEN
+      COVERALLS_PARALLEL
+    steps:
+      - checkout
+      - run:
+          name: prep
+          command: |
+            sudo pip3 install --upgrade pip tox coveralls
+      - run:
+          name: test
+          command: |
+            tox -e py37
+            coveralls
+    notify:
+      webhooks:
+        - url: https://coveralls.io/webhook?repo_token=$COVERALLS_REPO_TOKEN
+    post:
+      - coveralls
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-3.6
+      - test-3.7
