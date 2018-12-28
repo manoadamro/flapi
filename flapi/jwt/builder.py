@@ -1,10 +1,10 @@
 import time
 import json
-from typing import Any, Dict, Optional, List, Union
+from typing import Any, Callable, Dict, Optional, List, Union, Tuple
 from . import coder, store
 
 
-class Handler:
+class Builder:
 
     store = store.Store
     coder = coder.Coder
@@ -48,8 +48,8 @@ class Handler:
     def decode(
         self,
         jwt_string: str,
-        algorithms: List[str] = None,
         verify: bool = True,
+        algorithms: List[str] = None,
         options: Optional[Dict] = None,
     ) -> Dict:
         token_bytes: bytes = jwt_string.encode(self.encoding)
@@ -67,9 +67,14 @@ class Handler:
     def current_token(cls) -> Union[Dict, None]:
         return cls.store.get()
 
-    @classmethod
-    def generate_token(cls, *scopes: str, **fields: Any) -> Dict:
+    def generate_token(
+        self,
+        fields: Dict[str, Any],
+        scopes: Union[List, Tuple, Callable] = (),
+        *args,
+        **kwargs
+    ) -> str:
         fields["iat"] = time.time()
-        fields["scp"] = scopes
-        cls.store.set(fields)
-        return fields
+        fields["scp"] = scopes if not callable(scopes) else scopes()
+        self.store.set(fields)
+        return self.encode(fields, *args, **kwargs)

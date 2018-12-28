@@ -2,10 +2,11 @@ import unittest
 import unittest.mock
 import jwt
 import time
-from flapi.jwt.handler import Handler
+import flask
+from flapi.jwt.builder import Builder
 
 
-class JWTHandlerTest(unittest.TestCase):
+class BuilderTest(unittest.TestCase):
 
     secret = "secret"
     lifespan = 10
@@ -27,7 +28,8 @@ class JWTHandlerTest(unittest.TestCase):
         ).decode(self.handler.encoding)
 
     def setUp(self):
-        self.handler = Handler(self.secret, self.lifespan)
+        self.app = flask.Flask(__name__)
+        self.handler = Builder(self.secret, self.lifespan)
         self.handler.coder.encode_error = self.FakeError
         self.handler.coder.decode_error = self.FakeError
 
@@ -142,17 +144,19 @@ class JWTHandlerTest(unittest.TestCase):
         self.assertIsNone(token)
 
     def test_generate_token(self):
-        with unittest.mock.patch.object(self.handler.store, "set", lambda x: None):
-            token = self.handler.generate_token(*self.scopes, **self.jwt)
-        self.assertIsInstance(token, dict)
+        with self.app.app_context():
+            token_string = self.handler.generate_token(self.jwt, self.scopes)
+        self.assertIsInstance(token_string, str)
 
     def test_generate_token_defaults_issued_at_time(self):
-        with unittest.mock.patch.object(self.handler.store, "set", lambda x: None):
-            token = self.handler.generate_token(*self.scopes, **self.jwt)
+        with self.app.app_context():
+            self.handler.generate_token(self.jwt, self.scopes)
+            token = self.handler.current_token()
         self.assertIsInstance(token["iat"], float)
 
     def test_generate_token_includes_scopes(self):
         scopes = self.scopes
-        with unittest.mock.patch.object(self.handler.store, "set", lambda x: None):
-            token = self.handler.generate_token(*scopes, **self.jwt)
+        with self.app.app_context():
+            self.handler.generate_token(self.jwt, self.scopes)
+            token = self.handler.current_token()
         self.assertEqual(token["scp"], scopes)
