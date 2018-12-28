@@ -6,7 +6,8 @@ import setuptools
 NAME = 'flapi'
 VERSION = '0.0.0'
 REQUIRES = [
-    'flask>=1.0.0',
+    'flask',
+    'pyjwt'
 ]
 
 
