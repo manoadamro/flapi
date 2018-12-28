@@ -1,0 +1,2 @@
+class JwtProtected:
+    pass

@@ -1,49 +1,17 @@
-from typing import Any
-import flask
-from . import builder, errors
+from . import app as _app, route as _route, rules as _rules, errors as _errors
 
+FlaskJwt = _app.FlaskJwt
+current_token = FlaskJwt.current_token
 
-class FlaskJwt(builder.Builder):
+jwt_protected = _route.JwtProtected
 
-    header_key = "Authorization"
-    token_prefix = "Bearer "
-    validation_error = errors.JWTValidationError
+JWTRule = _rules.JWTRule
+HasScopes = _rules.HasScopes
+MatchValue = _rules.MatchValue
+AllOf = _rules.AllOf
+AnyOf = _rules.AnyOf
+NoneOf = _rules.NoneOf
 
-    def __init__(
-        self,
-        secret: str,
-        lifespan: int,
-        verify: bool = True,
-        auto_update: bool = False,
-        **kwargs: Any,
-    ):
-        super(FlaskJwt, self).__init__(secret, lifespan, **kwargs)
-        self.verify = verify
-        self.auto_update = auto_update
-        self.app = None
-
-    def init_app(self, app: flask.Flask) -> None:
-        self.app = app
-        self.app.before_request(self.pre_request_callback)
-        self.app.after_request(self.post_request_callback)
-
-    def pre_request_callback(self) -> None:
-        prefix = self.token_prefix
-        token_string = flask.request.headers.get(self.header_key, None)
-        if token_string is not None:
-            if not token_string.startswith(prefix) or len(token_string) <= len(prefix):
-                raise self.validation_error("invalid bearer token")
-            token_string = token_string[len(prefix) :]
-            decoded = self.decode(token_string, self.verify)
-            self.store.set(decoded)
-        else:
-            self.store.set(None)
-
-    def post_request_callback(self, response: flask.Response) -> flask.Response:
-        if self.auto_update:
-            prefix = self.token_prefix
-            token_dict = self.store.get()
-            if token_dict:
-                encoded = self.encode(token_dict)
-                response.headers.set(self.header_key, f"{prefix}{encoded}")
-        return response
+JWTEncodeError = _errors.JWTEncodeError
+JWTDecodeError = _errors.JWTDecodeError
+JWTValidationError = _errors.JWTValidationError

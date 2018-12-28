@@ -2,7 +2,7 @@ import unittest
 import unittest.mock
 import jwt
 import flask
-from flapi.jwt import FlaskJwt
+from flapi.jwt.app import FlaskJwt
 
 
 class JwtTest(unittest.TestCase):
