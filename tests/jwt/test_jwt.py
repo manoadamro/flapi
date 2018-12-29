@@ -24,21 +24,24 @@ class JwtTest(unittest.TestCase):
         )
 
     def test_pre_request_callback_null_token(self):
-        with self.app.app_context():
-            flask.request = unittest.mock.Mock(headers={})
+        with self.app.app_context(), unittest.mock.patch(
+            "flask.request", unittest.mock.Mock(headers={})
+        ):
             self.jwt.pre_request_callback()
             self.assertIsNone(self.jwt.store.get())
 
     def test_pre_request_callback_invalid_token(self):
-        with self.app.app_context():
-            flask.request = unittest.mock.Mock(headers={"Authorization": "abc"})
+        with self.app.app_context(), unittest.mock.patch(
+            "flask.request", unittest.mock.Mock(headers={"Authorization": "abc"})
+        ):
             self.assertRaises(self.FakeError, self.jwt.pre_request_callback)
 
     def test_pre_request_callback(self):
         with self.app.app_context(), unittest.mock.patch.object(
             self.jwt, "decode", lambda x, _: {"thing": x}
+        ), unittest.mock.patch(
+            "flask.request", unittest.mock.Mock(headers={"Authorization": "Bearer abc"})
         ):
-            flask.request = unittest.mock.Mock(headers={"Authorization": "Bearer abc"})
             self.jwt.pre_request_callback()
             self.assertEqual(self.jwt.current_token(), {"thing": "abc"})
 

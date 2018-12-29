@@ -1,8 +1,9 @@
 from typing import Any, Callable, Dict, List
+
 import flask
 import jsonpointer
-from flapi.core import rules
 
+from flapi.core import rules
 
 AllOf = rules.AllOf
 AnyOf = rules.AnyOf
