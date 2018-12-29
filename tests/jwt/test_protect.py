@@ -1,11 +1,11 @@
 import unittest
 import unittest.mock
-from flapi.jwt.route import Protect
+from flapi.jwt.protect import Protect
 from flapi.jwt.builder import Builder
 from flapi.jwt.errors import JWTValidationError
 
 
-class JWTProtectedTest(unittest.TestCase):
+class ProtectTest(unittest.TestCase):
     def test_protected(self):
         rules = [lambda t: True, lambda t: True]
         with unittest.mock.patch.object(Builder, "current_token", lambda: "token"):
