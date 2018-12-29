@@ -13,9 +13,9 @@ class FlaskJwt(builder.Builder):
         self,
         secret: str,
         lifespan: int,
+        app=None,
         verify: bool = True,
         auto_update: bool = False,
-        app=None,
         **kwargs: Any,
     ):
         super(FlaskJwt, self).__init__(secret, lifespan, **kwargs)

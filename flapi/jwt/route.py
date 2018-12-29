@@ -4,8 +4,8 @@ from . import errors, rules, builder
 
 
 class JwtProtected:
-    def __init__(self, *rules: rules.JWTRule):
-        self.rules = rules
+    def __init__(self, *checks: rules.JwtRule):
+        self.checks = rules.AllOf(*checks)
 
     def __call__(self, func: Callable) -> Callable:
         @functools.wraps(func)
@@ -15,7 +15,7 @@ class JwtProtected:
                 raise errors.JWTValidationError(
                     "client did not supply a token in request header"
                 )
-            if not all(rule(token) for rule in self.rules):
+            if not self.checks(token):
                 raise errors.JWTValidationError(
                     "one or more checks on the supplied jwt failed"
                 )

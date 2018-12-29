@@ -3,12 +3,12 @@ import flask
 import jsonpointer
 
 
-class JWTRule:
+class JwtRule:
     def __call__(self, token: Dict) -> bool:
         raise NotImplementedError
 
 
-class HasScopes(JWTRule):
+class HasScopes(JwtRule):
     def __init__(self, *scopes: str):
         self.scopes = scopes
 
@@ -17,7 +17,7 @@ class HasScopes(JWTRule):
         return all(scope in jwt_scopes for scope in self.scopes)
 
 
-class MatchValue(JWTRule):
+class MatchValue(JwtRule):
     def __init__(self, *paths):
         self.matchers: List[(Callable, str)] = [
             self._resolve_path(path) for path in paths
@@ -30,7 +30,7 @@ class MatchValue(JWTRule):
             [matcher[0](matcher[1], token) for matcher in self.matchers]
         )
 
-    def _resolve_path(self, path) -> (Callable, str):
+    def _resolve_path(self, path: str) -> (Callable, str):
         object_name, pointer = path.split(":")
         if not pointer.startswith("/"):
             pointer = f"/{pointer}"
@@ -41,7 +41,7 @@ class MatchValue(JWTRule):
 
     @staticmethod
     def _check_equal(values: List[Any]) -> bool:
-        return all(values[0] == rest for rest in values[1:])
+        return all(str(values[0]) == str(rest) for rest in values[1:])
 
     @staticmethod
     def header(path: str, _: Any) -> Any:
@@ -68,8 +68,8 @@ class MatchValue(JWTRule):
         return jsonpointer.resolve_pointer(token, path)
 
 
-class _CollectionRule(JWTRule):
-    def __init__(self, *rules: JWTRule):
+class _CollectionRule(JwtRule):
+    def __init__(self, *rules: JwtRule):
         self.rules = rules
 
     def __call__(self, token: Dict) -> bool:
@@ -89,3 +89,8 @@ class AllOf(_CollectionRule):
 class NoneOf(_CollectionRule):
     def __call__(self, token: Dict) -> bool:
         return not any(rule(token) for rule in self.rules)
+
+
+class Callback(AllOf):
+    def __init__(self, *funcs: Callable):
+        super(Callback, self).__init__(*funcs)

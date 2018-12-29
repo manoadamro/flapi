@@ -15,15 +15,15 @@ class Builder:
         secret: str,
         lifespan: int,
         algorithm: str = "HS256",
-        issuer: Union[str, List[str]] = None,
-        audience: Union[str, List[str]] = None,
+        issuer: Union[str, List[str], Callable] = None,
+        audience: Union[str, List[str], Callable] = None,
         json_encoder: Optional[json.JSONEncoder] = None,
     ):
         self.secret = secret
         self.lifespan = lifespan
         self.algorithm = algorithm
-        self.issuer = issuer
-        self.audience = audience
+        self.issuer = issuer if not callable(issuer) else issuer()
+        self.audience = audience if not callable(audience) else audience()
         self.json_encoder = json_encoder
 
     def encode(
@@ -32,8 +32,9 @@ class Builder:
         algorithm: str = None,
         headers: Optional[Dict] = None,
         not_before: float = None,
+        lifespan: int = None,
     ) -> str:
-        token["exp"] = time.time() + self.lifespan
+        token["exp"] = time.time() + (lifespan or self.lifespan)
         if self.issuer and "iss" not in token:
             token["iss"]: str = self.issuer
         if self.audience and "aud" not in token:

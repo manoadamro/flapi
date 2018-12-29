@@ -5,7 +5,7 @@ current_token = FlaskJwt.current_token
 
 jwt_protected = _route.JwtProtected
 
-JWTRule = _rules.JWTRule
+JWTRule = _rules.JwtRule
 HasScopes = _rules.HasScopes
 MatchValue = _rules.MatchValue
 AllOf = _rules.AllOf
