@@ -47,18 +47,12 @@ def protected_user(uuid):
     return uuid
 ```
 
-- [FlaskJwt](#FlaskJwt)
-  - [constructor](#constructor)
-  - [generate_token](#generate_token)
-  - [current_token](#current_token)
-- [protected_route](#protected_route)
-  - [JwtRule](#JwtRule)
-  - [HasScopes](#HasScopes)
-  - [MatchValue](#MatchValue)
-  - [Callback](#Callback)
-  - [AnyOf](#AnyOf)
-  - [AllOf](#AllOf)
-  - [NoneOf](#NoneOf)
+- [Flask Jwt](#FlaskJwt)
+  - [constructor](#FlaskJwt)
+  - [generate_token](#FlaskJwt.generate_token)
+  - [current_token](#FlaskJwt.current_token)
+- [Protected Route](#FlaskJwt.protected_route)
+- [Rules](#JWT-Rules)
 
 ## FlaskJwt(...)
 
@@ -124,10 +118,18 @@ def some_method():
     ...
 ```
 
-__rules__: one or more rules. see [flapi.jwt.rules](#flapi.jwt.rules)
+__rules__: one or more rules. see [flapi.jwt.rules](#JWT-Rules)
 
 
 # JWT Rules
+
+- [JwtRule](#JwtRule)
+- [HasScopes](#HasScopes)
+- [MatchValue](#MatchValue)
+- [Callback](#Callback)
+- [AnyOf](#AnyOf)
+- [AllOf](#AllOf)
+- [NoneOf](#NoneOf)
 
 ## JwtRule(...)
 
