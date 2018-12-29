@@ -1,9 +1,16 @@
 from typing import Any, Callable, Dict, List
 import flask
 import jsonpointer
+from flapi.core import rules
 
 
-class JwtRule:
+AllOf = rules.AllOf
+AnyOf = rules.AnyOf
+NoneOf = rules.NoneOf
+Callback = rules.Callback
+
+
+class JwtRule(rules.Rule):
     def __call__(self, token: Dict) -> bool:
         raise NotImplementedError
 
@@ -66,31 +73,3 @@ class MatchValue(JwtRule):
     @staticmethod
     def jwt(path: str, token: Dict) -> Any:
         return jsonpointer.resolve_pointer(token, path)
-
-
-class _CollectionRule(JwtRule):
-    def __init__(self, *rules: JwtRule):
-        self.rules = rules
-
-    def __call__(self, token: Dict) -> bool:
-        raise NotImplementedError
-
-
-class AnyOf(_CollectionRule):
-    def __call__(self, token: Dict) -> bool:
-        return any(rule(token) for rule in self.rules)
-
-
-class AllOf(_CollectionRule):
-    def __call__(self, token: Dict) -> bool:
-        return all(rule(token) for rule in self.rules)
-
-
-class NoneOf(_CollectionRule):
-    def __call__(self, token: Dict) -> bool:
-        return not any(rule(token) for rule in self.rules)
-
-
-class Callback(AllOf):
-    def __init__(self, *funcs: Callable):
-        super(Callback, self).__init__(*funcs)
