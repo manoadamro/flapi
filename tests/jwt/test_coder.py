@@ -6,9 +6,9 @@ from flapi.jwt.coder import Coder
 
 class JWTCoderTest(unittest.TestCase):
 
-    secret = "secret"
-    hs_key = "HS256"
-    credentials = (secret, hs_key)
+    key = "secret"
+    algorithm = "HS256"
+    credentials = (key, algorithm)
 
     fake_jwt = {"some": "thing"}
 
@@ -29,7 +29,7 @@ class JWTCoderTest(unittest.TestCase):
 
     def test_deserialize(self):
         token = self.coder.encode(self.fake_jwt, *self.credentials)
-        decoded = self.coder.decode(token, self.secret, [self.hs_key], verify=False)
+        decoded = self.coder.decode(token, self.key, [self.algorithm], verify=False)
         self.assertEqual(self.fake_jwt, decoded)
 
     @unittest.mock.patch("jwt.encode", raise_error)
