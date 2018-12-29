@@ -8,7 +8,7 @@ import flapi.schema.protect
 import flapi.schema.types
 
 
-class TestSchema(flapi.schema.types.Schema):
+class FakeSchema(flapi.schema.types.Schema):
     __strict__ = True
     test = flapi.schema.types.Bool()
 
@@ -25,14 +25,14 @@ class SchemaProtectTest(unittest.TestCase):
         flask, "request", unittest.mock.Mock(json={"test": True})
     )
     def test_expects_specific_json(self):
-        func = flapi.schema.protect(TestSchema)(route)
+        func = flapi.schema.protect(FakeSchema)(route)
         self.assertEqual(func(), {"test": True})
 
     @unittest.mock.patch.object(
         flask, "request", unittest.mock.Mock(json={"nope": True})
     )
     def test_fails_when_expecting_specific_json(self):
-        func = flapi.schema.protect(TestSchema)(route)
+        func = flapi.schema.protect(FakeSchema)(route)
         self.assertRaises(flapi.schema.errors.SchemaValidationError, func)
 
     @unittest.mock.patch.object(
