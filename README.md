@@ -30,19 +30,17 @@ pip3 install git+http://github.com/manoadamro/flapi
 # JWT
 
 ```python
-from flapi.jwt import FlaskJwt, jwt_protected, HasScopes, MatchValue
-
 jwt_handler = FlaskJwt("secret", lifespan=300)
 
 def get_token():
     encoded_token = jwt_handler.generate_token({"uuid": "123"}, ["read:protected"])
     return {"jwt": token}
 
-@jwt_protected(HasScopes("read:protected"))
+@protected(HasScopes("read:protected"))
 def protected():
     return "success"
 
-@jwt_protected(HasScopes("read:protected"), MatchValue("jwt:uuid", "url:uuid"))
+@protected(HasScopes("read:protected"), MatchValue("jwt:uuid", "url:uuid"))
 def protected_user(uuid):
     return uuid
 ```
@@ -51,7 +49,7 @@ def protected_user(uuid):
   - [constructor](#FlaskJwt)
   - [generate_token](#FlaskJwt.generate_token)
   - [current_token](#FlaskJwt.current_token)
-- [Protected Route](#FlaskJwt.protected_route)
+- [JWT Protected](#FlaskJwt.protected)
 - [Rules](#JWT-Rules)
 
 ## FlaskJwt(...)
@@ -110,10 +108,10 @@ Returns the decoded token associated with the current request from global store
 FlaskJwt.current_token()
 ```
 
-## protected_route(...)
+## protected(...)
 
 ```python
-@protected_route(*rules)
+@protected(*rules)
 def some_method():
     ...
 ```
