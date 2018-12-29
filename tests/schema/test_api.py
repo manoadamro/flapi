@@ -35,8 +35,6 @@ class Person(schema.Schema):
 
     @schema.custom_property(int, float, nullable=False)
     def something(cls, value):
-        if not isinstance(value, (int, float)):
-            raise TypeError
         return value * 2
 
 
@@ -87,19 +85,6 @@ class ApiTest(flask_testing.TestCase):
                     "address": {"post_code": "AB1 2CD", "number": 123},
                     "date_of_birth": "2010-01-01",
                     "something": 321,
-                },
-            )
-        )
-
-    def test_custom_prop_fails(self):
-        self.assert500(
-            self.client.post(
-                "/",
-                json={
-                    "name": "dave",
-                    "address": {"post_code": "AB1 2CD", "number": 123},
-                    "date_of_birth": "2010-01-01",
-                    "something": "nope",
                 },
             )
         )
