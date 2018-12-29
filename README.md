@@ -373,7 +373,7 @@ Notes:
 
 ```python
 @protect(MySchema)
-def some_method():
+def some_method(obj):
     ...
 ```
 

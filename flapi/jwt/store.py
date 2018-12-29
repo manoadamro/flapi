@@ -8,7 +8,7 @@ class Store:
     key = "jwt"
 
     @classmethod
-    def set(cls, token: Dict) -> None:
+    def set(cls, token: Union[Dict, None]) -> None:
         setattr(flask.g, cls.key, token)
 
     @classmethod

@@ -1,9 +1,12 @@
-from . import app as _app, protect as _route, rules as _rules, errors as _errors
+from . import app as _app
+from . import protect as _protect
+from . import rules as _rules
+from . import errors as _errors
 
-FlaskJwt = _app.FlaskJwt
-current_token = FlaskJwt.current_token
+JwtHandler = _app.JwtHandler
+current_token = JwtHandler.current_token
 
-protect = _route.Protect
+protect = _protect.Protect
 
 JWTRule = _rules.JwtRule
 HasScopes = _rules.HasScopes

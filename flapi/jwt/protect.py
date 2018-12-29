@@ -1,7 +1,7 @@
 import functools
 from typing import Any, Callable, Dict
 
-from . import builder, errors, rules
+from . import app, errors, rules
 
 
 class Protect:
@@ -11,7 +11,7 @@ class Protect:
     def __call__(self, func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            token: Dict = builder.Builder.current_token()
+            token: Dict = app.JwtHandler.current_token()
             if not token:
                 raise errors.JWTValidationError(
                     "client did not supply a token in request header"

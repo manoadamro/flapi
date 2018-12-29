@@ -1,10 +1,17 @@
 import flask_testing
-from flask import Blueprint, Flask
+from flask import Blueprint, Config, Flask
 
-from flapi.jwt import FlaskJwt, HasScopes, MatchValue, protect
+from flapi.jwt import HasScopes, JwtHandler, MatchValue, protect
 
 blueprint = Blueprint("test_blueprint", __name__)
-jwt_handler = FlaskJwt("secret", 300, auto_update=True)
+jwt_handler = JwtHandler()
+
+
+class ApiConfig(Config):
+    JWT_SECRET = "secret"
+    JWT_LIFESPAN = 10
+    JWT_ALGORITHM = "HS256"
+    JWT_AUTO_UPDATE = True
 
 
 @blueprint.route("/token", methods=["GET"])
@@ -31,6 +38,7 @@ def protected_user(uuid):
 class TestApi(flask_testing.TestCase):
     def create_app(self):
         app = Flask(__name__)
+        app.config.from_object(ApiConfig)
         app.register_blueprint(blueprint)
         jwt_handler.init_app(app)
         return app

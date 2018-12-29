@@ -1,4 +1,6 @@
-from . import protect as _protect, types as _types, errors as _errors
+from . import protect as _protect
+from . import types as _types
+from . import errors as _errors
 
 
 protect = _protect.Protect

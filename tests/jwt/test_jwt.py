@@ -2,74 +2,113 @@ import unittest
 import unittest.mock
 
 import flask
-import jwt
+import jwt as pyjwt
 
-from flapi.jwt.app import FlaskJwt
+from flapi.jwt.app import JwtHandler
 
 
 class JwtTest(unittest.TestCase):
     def setUp(self):
         self.app = flask.Flask(__name__)
-        self.jwt = FlaskJwt("secret", 60, auto_update=True)
-        self.jwt.init_app(self.app)
-        self.jwt.validation_error = self.FakeError
+        self.handler = JwtHandler(self.app)
+        self.handler.secret = "secret"
+        self.handler.lifespan = 300
+        self.handler.validation_error = self.FakeError
 
-    class FakeError(jwt.PyJWTError):
+    @property
+    def jwt(self):
+        return {"some": "thing"}
+
+    @property
+    def scopes(self):
+        return "read:thing", "write:thing"
+
+    class FakeError(pyjwt.PyJWTError):
         pass
 
     def test_registers_pre(self):
         self.assertTrue(
-            self.jwt.pre_request_callback in self.app.before_request_funcs[None],
-            f"{self.jwt.pre_request_callback} not in {self.app.before_request_funcs}",
+            self.handler.before_request in self.app.before_request_funcs[None],
+            f"{self.handler.before_request} not in {self.app.before_request_funcs}",
         )
 
     def test_pre_request_callback_null_token(self):
         with self.app.app_context(), unittest.mock.patch(
             "flask.request", unittest.mock.Mock(headers={})
         ):
-            self.jwt.pre_request_callback()
-            self.assertIsNone(self.jwt.store.get())
+            self.handler.before_request()
+            self.assertIsNone(self.handler._store.get())
 
     def test_pre_request_callback_invalid_token(self):
         with self.app.app_context(), unittest.mock.patch(
             "flask.request", unittest.mock.Mock(headers={"Authorization": "abc"})
         ):
-            self.assertRaises(self.FakeError, self.jwt.pre_request_callback)
+            self.assertRaises(self.FakeError, self.handler.before_request)
 
     def test_pre_request_callback(self):
         with self.app.app_context(), unittest.mock.patch.object(
-            self.jwt, "decode", lambda x, _: {"thing": x}
+            self.handler, "_decode", lambda x: {"thing": x}
         ), unittest.mock.patch(
             "flask.request", unittest.mock.Mock(headers={"Authorization": "Bearer abc"})
         ):
-            self.jwt.pre_request_callback()
-            self.assertEqual(self.jwt.current_token(), {"thing": "abc"})
+            self.handler.before_request()
+            self.assertEqual(self.handler.current_token(), {"thing": "abc"})
 
     def test_registers_post(self):
         self.assertTrue(
-            self.jwt.post_request_callback in self.app.after_request_funcs[None],
-            f"{self.jwt.post_request_callback} not in {self.app.after_request_funcs}",
+            self.handler.after_request in self.app.after_request_funcs[None],
+            f"{self.handler.after_request} not in {self.app.after_request_funcs}",
         )
 
     def test_post_request_callback(self):
-        self.jwt.auto_update = False
+        self.handler.app.config["JWT_AUTO_UPDATE"] = False
         response = flask.Response()
         with self.app.app_context():
-            self.assertEqual(self.jwt.post_request_callback(response), response)
+            self.assertEqual(self.handler.after_request(response), response)
 
     def test_post_request_callback_auto_update_with_null_token(self):
         with self.app.app_context():
-            response = self.jwt.post_request_callback(flask.Response())
-            self.assertTrue(self.jwt.header_key not in response.headers)
+            response = self.handler.after_request(flask.Response())
+            self.assertTrue(self.handler.header_key not in response.headers)
 
     def test_post_request_callback_auto_update(self):
         with self.app.app_context(), unittest.mock.patch.object(
-            self.jwt, "encode", lambda x: "I am a token"
+            self.handler, "_encode", lambda x: "I am a token"
         ):
-            self.jwt.store.set({"thing": True})
-            response = self.jwt.post_request_callback(flask.Response())
+            self.handler.app.config["JWT_AUTO_UPDATE"] = True
+            self.handler._store.set({"thing": True})
+            response = self.handler.after_request(flask.Response())
 
         self.assertEqual(
-            response.headers.get(self.jwt.header_key, None),
-            f"{self.jwt.token_prefix}I am a token",
+            response.headers.get(self.handler.header_key, None),
+            f"{self.handler.token_prefix}I am a token",
         )
+
+    def test_current_token(self):
+        expected = {"some": "thing"}
+        with unittest.mock.patch.object(self.handler._store, "get", lambda: expected):
+            token = self.handler.current_token()
+        self.assertEqual(token, expected)
+
+    def test_null_current_token(self):
+        with unittest.mock.patch.object(self.handler._store, "get", lambda: None):
+            token = self.handler.current_token()
+        self.assertIsNone(token)
+
+    def test_generate_token(self):
+        with self.app.app_context():
+            token_string = self.handler.generate_token(self.jwt, self.scopes)
+        self.assertIsInstance(token_string, str)
+
+    def test_generate_token_defaults_issued_at_time(self):
+        with self.app.app_context():
+            self.handler.generate_token(self.jwt, self.scopes)
+            token = self.handler.current_token()
+        self.assertIsInstance(token["iat"], float)
+
+    def test_generate_token_includes_scopes(self):
+        scopes = self.scopes
+        with self.app.app_context():
+            self.handler.generate_token(self.jwt, self.scopes)
+            token = self.handler.current_token()
+        self.assertEqual(token["scp"], scopes)
