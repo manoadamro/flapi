@@ -43,7 +43,7 @@ class JwtTest(unittest.TestCase):
             "flask.request", unittest.mock.Mock(headers={})
         ):
             self.handler.before_request()
-            self.assertIsNone(self.handler._store.get())
+            self.assertIsNone(self.handler._jwt_store.get())
 
     def test_pre_request_callback_invalid_token(self):
         with self.app.app_context(), unittest.mock.patch(
@@ -82,7 +82,7 @@ class JwtTest(unittest.TestCase):
             self.handler, "_encode", lambda x: "I am a token"
         ):
             self.handler.app.config["JWT_AUTO_UPDATE"] = True
-            self.handler._store.set({"thing": True})
+            self.handler._jwt_store.set({"thing": True})
             response = self.handler.after_request(flask.Response())
 
         self.assertEqual(
@@ -92,22 +92,26 @@ class JwtTest(unittest.TestCase):
 
     def test_current_token(self):
         expected = {"some": "thing"}
-        with unittest.mock.patch.object(self.handler._store, "get", lambda: expected):
+        with unittest.mock.patch.object(
+            self.handler._jwt_store, "get", lambda: expected
+        ):
             token = self.handler.current_token()
         self.assertEqual(token, expected)
 
     def test_null_current_token(self):
-        with unittest.mock.patch.object(self.handler._store, "get", lambda: None):
+        with unittest.mock.patch.object(self.handler._jwt_store, "get", lambda: None):
             token = self.handler.current_token()
         self.assertIsNone(token)
 
     def test_generate_token(self):
         with self.app.app_context():
+            flask.g.jwt_handler = self.handler
             token_string = self.handler.generate_token(self.jwt, self.scopes)
         self.assertIsInstance(token_string, str)
 
     def test_generate_token_defaults_issued_at_time(self):
         with self.app.app_context():
+            flask.g.jwt_handler = self.handler
             self.handler.generate_token(self.jwt, self.scopes)
             token = self.handler.current_token()
         self.assertIsInstance(token["iat"], float)
@@ -115,6 +119,7 @@ class JwtTest(unittest.TestCase):
     def test_generate_token_includes_scopes(self):
         scopes = self.scopes
         with self.app.app_context():
+            flask.g.jwt_handler = self.handler
             self.handler.generate_token(self.jwt, self.scopes)
             token = self.handler.current_token()
         self.assertEqual(token["scp"], scopes)

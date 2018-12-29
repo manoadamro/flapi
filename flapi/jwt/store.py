@@ -1,16 +1,28 @@
-from typing import Dict, Union
+from typing import Any
 
 import flask
 
 
-class Store:
+class _Store:
 
-    key = "jwt"
+    key = None
 
     @classmethod
-    def set(cls, token: Union[Dict, None]) -> None:
+    def set(cls, token: Any) -> None:
         setattr(flask.g, cls.key, token)
 
     @classmethod
-    def get(cls) -> Union[Dict, None]:
+    def get(cls) -> Any:
         return getattr(flask.g, cls.key, None)
+
+    @classmethod
+    def clear(cls) -> None:
+        setattr(flask.g, cls.key, None)
+
+
+class JwtStore(_Store):
+    key = "jwt"
+
+
+class HandlerStore(_Store):
+    key = "jwt_handler"

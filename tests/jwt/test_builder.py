@@ -22,7 +22,7 @@ class BuilderTest(unittest.TestCase):
         return {"some": "thing"}
 
     def encode(self, data):
-        return self.handler._coder.encode(
+        return self.handler._jwt_coder.encode(
             data, self.handler.secret, algorithm=self.handler.algorithm
         ).decode(self.handler.encoding)
 
@@ -32,8 +32,8 @@ class BuilderTest(unittest.TestCase):
         self.handler.lifespan = self.lifespan
         self.handler.secret = self.secret
         self.handler.algorithm = self.algorithm
-        self.handler._coder.encode_error = self.FakeError
-        self.handler._coder.decode_error = self.FakeError
+        self.handler._jwt_coder.encode_error = self.FakeError
+        self.handler._jwt_coder.decode_error = self.FakeError
 
     def test_encode_minimal(self):
         data = self.jwt

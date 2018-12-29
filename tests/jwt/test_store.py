@@ -3,7 +3,7 @@ import unittest.mock
 
 import flask
 
-from flapi.jwt.store import Store
+from flapi.jwt.store import JwtStore
 
 
 class JWTStoreTest(unittest.TestCase):
@@ -11,12 +11,12 @@ class JWTStoreTest(unittest.TestCase):
     fake_g = {"some": "thing", "other": True}
 
     def setUp(self):
-        self.store = Store
+        self.store = JwtStore
 
     @unittest.mock.patch.object(flask, "g", unittest.mock.Mock())
     def test_sets_g_object(self):
         self.store.set(self.fake_g)
-        self.assertTrue(hasattr(flask.g, Store.key))
+        self.assertTrue(hasattr(flask.g, JwtStore.key))
 
     @unittest.mock.patch.object(flask, "g", unittest.mock.Mock())
     def test_sets_object(self):

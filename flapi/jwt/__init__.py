@@ -4,7 +4,9 @@ from . import rules as _rules
 from . import errors as _errors
 
 JwtHandler = _app.JwtHandler
+current_handler = JwtHandler.current_handler
 current_token = JwtHandler.current_token
+generate_token = JwtHandler.generate_token
 
 protect = _protect.Protect
 

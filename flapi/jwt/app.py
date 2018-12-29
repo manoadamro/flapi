@@ -16,8 +16,9 @@ class JwtHandler:
     validation_error = errors.JWTValidationError
     json_encoder: Optional[json.JSONEncoder] = None
 
-    _store = store.Store
-    _coder = coder.Coder
+    _jwt_store = store.JwtStore
+    _handler_store = store.HandlerStore
+    _jwt_coder = coder.Coder
 
     def __init__(self, app=None):
         self.app = None
@@ -75,6 +76,7 @@ class JwtHandler:
             raise ValueError()
 
     def before_request(self) -> None:
+        self._handler_store.set(self)
         prefix = self.token_prefix
         token_string = flask.request.headers.get(self.header_key, None)
         if token_string is not None:
@@ -82,14 +84,15 @@ class JwtHandler:
                 raise self.validation_error("invalid bearer token")
             token_string = token_string[len(prefix) :]
             decoded = self._decode(token_string)
-            self._store.set(decoded)
+            self._jwt_store.set(decoded)
         else:
-            self._store.set(None)
+            self._jwt_store.set(None)
 
     def after_request(self, response: flask.Response) -> flask.Response:
+        self._handler_store.clear()
         if self.auto_update:
             prefix = self.token_prefix
-            token_dict = self._store.get()
+            token_dict = self._jwt_store.get()
             print(token_dict)
             if token_dict:
                 encoded = self._encode(token_dict)
@@ -98,18 +101,21 @@ class JwtHandler:
 
     @classmethod
     def current_token(cls) -> Union[Dict, None]:
-        return cls._store.get()
+        return cls._jwt_store.get()
 
+    @classmethod
+    def current_handler(cls):
+        return cls._handler_store.get()
+
+    @classmethod
     def generate_token(
-        self,
-        fields: Dict[str, Any],
-        scopes: Union[List, Tuple, Callable] = (),
-        **kwargs,
+        cls, fields: Dict[str, Any], scopes: Union[List, Tuple, Callable] = (), **kwargs
     ) -> str:
         fields["iat"] = time.time()
         fields["scp"] = scopes if not callable(scopes) else scopes()
-        self._store.set(fields)
-        return self._encode(fields, **kwargs)
+        app: __class__ = cls.current_handler()
+        app._jwt_store.set(fields)
+        return app._encode(fields, **kwargs)
 
     def _encode(
         self,
@@ -126,14 +132,14 @@ class JwtHandler:
             token["aud"]: str = self.audience
         if not_before and "nbf" not in token:
             token["nbf"]: float = not_before
-        token_bytes: bytes = self._coder.encode(
+        token_bytes: bytes = self._jwt_coder.encode(
             token, self.secret, algorithm or self.algorithm, headers, self.json_encoder
         )
         return token_bytes.decode(self.encoding)
 
     def _decode(self, jwt_string: str) -> Dict:
         token_bytes: bytes = jwt_string.encode(self.encoding)
-        return self._coder.decode(
+        return self._jwt_coder.decode(
             token_bytes,
             self.secret,
             [self.algorithm],
