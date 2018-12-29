@@ -1,5 +1,5 @@
 import unittest
-from flapi.jwt.rules import AllOf
+from flapi.core.rules import AllOf
 
 
 class AllOfTest(unittest.TestCase):

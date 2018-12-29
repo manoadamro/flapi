@@ -1,5 +1,5 @@
 import unittest
-from flapi.jwt.rules import NoneOf
+from flapi.core.rules import NoneOf
 
 
 class NoneOfTest(unittest.TestCase):

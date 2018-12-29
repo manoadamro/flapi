@@ -1,5 +1,5 @@
 import unittest
-from flapi.jwt.rules import Callback
+from flapi.core.rules import Callback
 
 
 class CallbackTest(unittest.TestCase):

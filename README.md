@@ -68,7 +68,7 @@ __lifespan__: int (required) Lifespan of a token in seconds, after which it will
 
 __app__: flask.Flask (default: None):Instance of a flask app (flask.Flask). If one is provided it will be initialised immediately
 
-__verify__: bool (default: True) If false, token rules will not be verified.
+__verify__: bool (default: True) If false, token core will not be verified.
 
 __auto_update__: bool (default: False) Return a token with an updated expiry in every response to a request that contained a valid jwt.
 
@@ -118,7 +118,7 @@ def some_method():
     ...
 ```
 
-__rules__: one or more rules. see [flapi.jwt.rules](#JWT-Rules)
+__rules__: one or more core. see [flapi.jwt.rules](#JWT-Rules)
 
 
 # JWT Rules
@@ -133,9 +133,9 @@ __rules__: one or more rules. see [flapi.jwt.rules](#JWT-Rules)
 
 ## JwtRule(...)
 
-Base class for all JWT rules.
+Base class for all JWT core.
 <br>
-Can be used to build custom rules
+Can be used to build custom core
 
 ```python
 
@@ -255,7 +255,7 @@ True
 
 ## AnyOf(...)
 
-Considers the check passed if any of the defined rules pass
+Considers the check passed if any of the defined core pass
 
 ```python
 
@@ -275,7 +275,7 @@ False
 
 ## AllOf(...)
 
-Considers the check passed if all of the defined rules pass
+Considers the check passed if all of the defined core pass
 
 ```python
 
@@ -298,7 +298,7 @@ True
 
 ## NoneOf(...)
 
-Considers the check passed if none of the defined rules pass
+Considers the check passed if none of the defined core pass
 
 ```python
 
@@ -324,6 +324,18 @@ True
 
 ---
 
+# Schema
+
+```python
+
+```
+
+TODO list of stuff
+
+TODO docs
+
+---
+
 # Planned Improvements:
 
 ### JWT
@@ -332,5 +344,9 @@ True
 - Pass strings to jwt_protected and have them implicitly used as required scopes.
 - Pass a tuple to any collection rule and have it implicitly used as an AllOf
 - Allow more parameters to be resolved callables
+
+### Schema
+
+-
 
 ---

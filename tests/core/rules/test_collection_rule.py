@@ -1,5 +1,5 @@
 import unittest
-from flapi.jwt.rules import _CollectionRule
+from flapi.core.rules import _CollectionRule
 
 
 class CollectionRuleTest(unittest.TestCase):
