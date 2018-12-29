@@ -56,10 +56,6 @@ class JwtHandler:
         return self.app.config.get("JWT_AUDIENCE", None)
 
     @property
-    def options(self):
-        return self.app.config.get("JWT_OPTIONS", None)
-
-    @property
     def verify(self):
         return self.app.config.get("JWT_VERIFY", True)
 
@@ -142,7 +138,6 @@ class JwtHandler:
             self.secret,
             [self.algorithm],
             self.verify,
-            self.options,
             issuer=self.issuer,
             audience=self.audience,
         )
