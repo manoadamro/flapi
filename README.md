@@ -15,7 +15,7 @@ pip3 install --upgrade pip
 pip3 install git+http://github.com/manoadamro/flapi
 ```
 
-## Packages
+## Docs
 
 - [flapi](#Flapi)
 - [flapi.jwt](#JWT)
