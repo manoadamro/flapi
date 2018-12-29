@@ -21,6 +21,8 @@ pip3 install git+http://github.com/manoadamro/flapi
 - [flapi.jwt](#JWT)
 - [flapi.schema](#Schema)
 
+[Planned Improvements](#Planned-Improvements)
+
 ---
 
 # Flapi
