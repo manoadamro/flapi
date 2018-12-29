@@ -106,3 +106,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 !/README.md
+run_tests.sh
