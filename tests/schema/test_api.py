@@ -28,8 +28,8 @@ class Items(schema.Schema):
 class Person(schema.Schema):
     name = schema.String(min_length=3, max_length=50, nullable=False)
     address = schema.Object(Address, nullable=False, strict=True)
-    friends = schema.Array(schema.Uuid, default=[])
-    items = schema.Array(schema.Object(Items, strict=False), default=[])
+    friends = schema.Array(schema.Uuid)
+    items = schema.Array(schema.Object(Items, strict=False))
     date_of_birth = schema.Date(max_value=get_minimum_dob, nullable=False)
     date_of_death = schema.Date(max_value=datetime.date.today, nullable=True)
 

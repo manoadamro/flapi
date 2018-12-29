@@ -2,10 +2,12 @@ from . import protect as _protect, types as _types, errors as _errors
 
 
 protect = _protect.Protect
-custom_property = _types.CustomProperty
 
 Schema = _types.Schema
+
 Property = _types.Property
+custom_property = _types.CustomProperty
+
 Object = _types.Object
 Array = _types.Array
 Choice = _types.Choice

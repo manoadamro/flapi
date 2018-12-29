@@ -4,6 +4,7 @@ from typing import Any, Callable, Type, Union
 import flask
 
 from . import errors, types
+from ..core import rules
 
 
 class Protect:
@@ -15,6 +16,8 @@ class Protect:
             types.Schema,
             Type[types.Property],
             types.Property,
+            Type[rules.Rule],
+            rules.Rule,
             None,
         ],
     ):

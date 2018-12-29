@@ -53,18 +53,6 @@ class ArrayTest(unittest.TestCase):
         prop = flapi.schema.types.Array(flapi.schema.types.Bool)
         self.assertRaises(flapi.schema.errors.SchemaValidationError, prop, [True, ""])
 
-    def test_nullable_by_default(self):
-        prop = flapi.schema.types.Array(BasicSchema)
-        self.assertIsNone(prop(None))
-
-    def test_nullable_allows_null(self):
-        prop = flapi.schema.types.Array(BasicSchema, nullable=True)
-        self.assertIsNone(prop(None))
-
-    def test_nullable_raises_error(self):
-        prop = flapi.schema.types.Array(BasicSchema, nullable=False)
-        self.assertRaises(flapi.schema.errors.SchemaValidationError, prop, None)
-
     def test_wrong_type(self):
         prop = flapi.schema.types.Array(BasicSchema, callback=None)
         self.assertRaises(flapi.schema.errors.SchemaValidationError, prop, 12)

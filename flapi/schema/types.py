@@ -68,7 +68,7 @@ class Schema:
         return self.object(value)
 
 
-class Property:
+class Property(rules.Rule):
     def __init__(
         self,
         *types: Type[Any],
@@ -84,7 +84,7 @@ class Property:
     def _get_value(self, value: Any) -> Any:
         if value is not None:
             return value
-        if not self.nullable:
+        if not self.nullable and self.default is None:
             raise errors.SchemaValidationError("value should not be None")
         if callable(self.default):
             return self.default()
@@ -121,7 +121,7 @@ class CustomProperty(Property):
 class Object(Property):
     def __init__(self, schema: Type[Schema], strict: bool = False, **kwargs):
         super(Object, self).__init__(dict, **kwargs)
-        self.strict = strict
+        self.strict = strict or schema._is_strict
         self.schema = self._load(schema)
 
     @classmethod
@@ -147,11 +147,11 @@ class Array(Property):
     def __init__(
         self,
         schema: Union[Property, Type[Property]],
-        min_length: Union[int, float, Callable] = None,
-        max_length: Union[int, float, Callable] = None,
-        **kwargs,
+        min_length: Union[int, Callable] = None,
+        max_length: Union[int, Callable] = None,
+        callback=None,
     ):
-        super(Array, self).__init__(list, **kwargs)
+        super(Array, self).__init__(list, nullable=False, default=[], callback=callback)
         self.schema = schema() if isinstance(schema, type) else schema
         self.range = _Range(min_length, max_length)
 
@@ -159,15 +159,13 @@ class Array(Property):
         value = super(Array, self).__call__(value)
         if not self.range(value):
             raise errors.SchemaValidationError(f"value {value} is out of defined range")
-        if value is None:
-            return None
         for i in range(len(value)):
             value[i] = self.schema(value[i])
         return value
 
 
 class Choice(Property):
-    def __init__(self, choices, **kwargs):
+    def __init__(self, choices: List[Any], **kwargs: Any):
         super(Choice, self).__init__(**kwargs)
         self.choices = choices
 
