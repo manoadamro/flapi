@@ -1,6 +1,8 @@
 import unittest
 import unittest.mock
+
 import jwt
+
 from flapi.jwt.coder import Coder
 
 

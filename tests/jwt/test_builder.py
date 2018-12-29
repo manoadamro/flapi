@@ -1,8 +1,10 @@
+import time
 import unittest
 import unittest.mock
-import jwt
-import time
+
 import flask
+import jwt
+
 from flapi.jwt.builder import Builder
 
 

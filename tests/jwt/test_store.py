@@ -1,5 +1,6 @@
 import unittest
 import unittest.mock
+
 import flask
 
 from flapi.jwt.store import Store

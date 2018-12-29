@@ -1,5 +1,6 @@
-import flask
 from typing import Dict, Union
+
+import flask
 
 
 class Store:

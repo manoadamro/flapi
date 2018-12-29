@@ -1,8 +1,9 @@
 import unittest
 import unittest.mock
-from flapi.jwt.protect import Protect
+
 from flapi.jwt.builder import Builder
 from flapi.jwt.errors import JWTValidationError
+from flapi.jwt.protect import Protect
 
 
 class ProtectTest(unittest.TestCase):

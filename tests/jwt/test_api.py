@@ -1,7 +1,7 @@
 import flask_testing
-from flask import Flask, Blueprint
-from flapi.jwt import FlaskJwt, protect, HasScopes, MatchValue
+from flask import Blueprint, Flask
 
+from flapi.jwt import FlaskJwt, HasScopes, MatchValue, protect
 
 blueprint = Blueprint("test_blueprint", __name__)
 jwt_handler = FlaskJwt("secret", 300, auto_update=True)
