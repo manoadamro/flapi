@@ -12,7 +12,6 @@ class JwtHandler:
     header_key = "Authorization"
     token_prefix = "Bearer "
     encoding = "utf8"
-    default_algorithm = "HS256"
 
     validation_error = errors.JWTValidationError
     json_encoder: Optional[json.JSONEncoder] = None
@@ -42,7 +41,7 @@ class JwtHandler:
 
     @property
     def algorithm(self):
-        return self.app.config.get("JWT_ALGORITHM", self.default_algorithm)
+        return self.app.config.get("JWT_ALGORITHM", None)
 
     @algorithm.setter
     def algorithm(self, value):

@@ -10,6 +10,7 @@ from flapi.jwt.app import JwtHandler
 
 class BuilderTest(unittest.TestCase):
 
+    algorithm = "HS256"
     secret = "secret"
     lifespan = 10
 
@@ -19,10 +20,6 @@ class BuilderTest(unittest.TestCase):
     @property
     def jwt(self):
         return {"some": "thing"}
-
-    @property
-    def scopes(self):
-        return "read:thing", "write:thing"
 
     def encode(self, data):
         return self.handler._coder.encode(
@@ -34,6 +31,7 @@ class BuilderTest(unittest.TestCase):
         self.handler = JwtHandler(self.app)
         self.handler.lifespan = self.lifespan
         self.handler.secret = self.secret
+        self.handler.algorithm = self.algorithm
         self.handler._coder.encode_error = self.FakeError
         self.handler._coder.decode_error = self.FakeError
 

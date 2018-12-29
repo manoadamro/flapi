@@ -8,11 +8,17 @@ from flapi.jwt.app import JwtHandler
 
 
 class JwtTest(unittest.TestCase):
+
+    algorithm = "HS256"
+    secret = "secret"
+    lifespan = 10
+
     def setUp(self):
         self.app = flask.Flask(__name__)
         self.handler = JwtHandler(self.app)
-        self.handler.secret = "secret"
-        self.handler.lifespan = 300
+        self.handler.secret = self.secret
+        self.handler.lifespan = self.lifespan
+        self.handler.algorithm = self.algorithm
         self.handler.validation_error = self.FakeError
 
     @property
@@ -112,3 +118,15 @@ class JwtTest(unittest.TestCase):
             self.handler.generate_token(self.jwt, self.scopes)
             token = self.handler.current_token()
         self.assertEqual(token["scp"], scopes)
+
+    def test_raises_error_if_secret_not_set(self):
+        self.handler.secret = None
+        self.assertRaises(ValueError, self.handler.on_setup)
+
+    def test_raises_error_if_lifespan_not_set(self):
+        self.handler.lifespan = None
+        self.assertRaises(ValueError, self.handler.on_setup)
+
+    def test_raises_error_if_algorithm_not_set(self):
+        self.handler.algorithm = None
+        self.assertRaises(ValueError, self.handler.on_setup)
