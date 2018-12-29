@@ -1,6 +1,8 @@
 import json
+from typing import Any, Dict, List, Optional
+
 import jwt
-from typing import Any, Dict, Optional, List
+
 from . import errors
 
 

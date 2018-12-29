@@ -1,6 +1,7 @@
-from typing import Any, Callable, Dict
 import functools
-from . import errors, rules, builder
+from typing import Any, Callable, Dict
+
+from . import builder, errors, rules
 
 
 class Protect:

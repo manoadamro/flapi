@@ -1,4 +1,5 @@
 import unittest
+
 from flapi.core.rules import AnyOf
 
 

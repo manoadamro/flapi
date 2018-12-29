@@ -1,4 +1,5 @@
 import unittest
+
 from flapi.jwt.rules import JwtRule
 
 

@@ -1,5 +1,7 @@
 from typing import Any
+
 import flask
+
 from . import builder, errors
 
 

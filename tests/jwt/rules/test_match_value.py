@@ -1,6 +1,8 @@
 import unittest
 import unittest.mock
+
 import flask
+
 from flapi.jwt.rules import MatchValue
 
 
