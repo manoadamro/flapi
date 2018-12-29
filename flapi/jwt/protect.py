@@ -3,7 +3,7 @@ import functools
 from . import errors, rules, builder
 
 
-class JwtProtected:
+class Protect:
     def __init__(self, *checks: rules.JwtRule):
         self.checks = rules.AllOf(*checks)
 

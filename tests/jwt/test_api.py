@@ -1,6 +1,6 @@
 import flask_testing
 from flask import Flask, Blueprint
-from flapi.jwt import FlaskJwt, jwt_protected, HasScopes, MatchValue
+from flapi.jwt import FlaskJwt, protect, HasScopes, MatchValue
 
 
 blueprint = Blueprint("test_blueprint", __name__)
@@ -15,14 +15,14 @@ def get_token():
 
 
 @blueprint.route("/protected", methods=["GET"])
-@jwt_protected(HasScopes("read:protected"))
+@protect(HasScopes("read:protected"))
 def protected():
     print("/protected")
     return "success"
 
 
 @blueprint.route("/protected/<uuid>", methods=["GET"])
-@jwt_protected(HasScopes("read:protected"), MatchValue("jwt:uuid", "url:uuid"))
+@protect(HasScopes("read:protected"), MatchValue("jwt:uuid", "url:uuid"))
 def protected_user(uuid):
     print(f"/protected/{uuid}")
     return uuid
