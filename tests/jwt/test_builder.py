@@ -5,7 +5,7 @@ import unittest.mock
 import flask
 import jwt
 
-from flapi.jwt.app import JwtHandler
+from flapi.jwt.handler import JwtHandler
 
 
 class BuilderTest(unittest.TestCase):

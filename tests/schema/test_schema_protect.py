@@ -4,7 +4,7 @@ import unittest.mock
 import flask
 
 import flapi.schema.errors
-import flapi.schema.protect
+import flapi.schema.protection
 import flapi.schema.types
 
 
