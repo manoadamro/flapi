@@ -13,7 +13,7 @@ class JwtHandler(base.BaseHandler):
     _jwt_store = store.JwtStore
     _handler_store = store.HandlerStore
 
-    def __init__(self, app=None):
+    def __init__(self, app: flask.Flask = None):
         super(JwtHandler, self).__init__()
         self.init_app(app)
 
@@ -40,7 +40,7 @@ class JwtHandler(base.BaseHandler):
             app.before_first_request(self._on_setup)
             app.before_request(self._before_request)
             app.after_request(self._after_request)
-        self.app = app
+            self.config = app.config
 
     def _on_setup(self):
         if self.secret is None:

@@ -16,36 +16,36 @@ class BaseHandler:
 
     _jwt_coder = coder.Coder
 
-    def __init__(self, app=None):
-        self.app = app
+    def __init__(self, config=None):
+        self.config = config
 
     @property
     def secret(self):
-        return self.app.config.get("FLAPI_JWT_SECRET", None)
+        return self.config.get("FLAPI_JWT_SECRET", None)
 
     @property
     def lifespan(self):
-        return self.app.config.get("FLAPI_JWT_LIFESPAN", None)
+        return self.config.get("FLAPI_JWT_LIFESPAN", None)
 
     @property
     def algorithm(self):
-        return self.app.config.get("FLAPI_JWT_ALGORITHM", None)
+        return self.config.get("FLAPI_JWT_ALGORITHM", None)
 
     @property
     def issuer(self):
-        return self.app.config.get("FLAPI_JWT_ISSUER", None)
+        return self.config.get("FLAPI_JWT_ISSUER", None)
 
     @property
     def audience(self):
-        return self.app.config.get("FLAPI_JWT_AUDIENCE", None)
+        return self.config.get("FLAPI_JWT_AUDIENCE", None)
 
     @property
     def verify(self):
-        return self.app.config.get("FLAPI_JWT_VERIFY", True)
+        return self.config.get("FLAPI_JWT_VERIFY", True)
 
     @property
     def auto_update(self):
-        return self.app.config.get("FLAPI_JWT_AUTO_UPDATE", False)
+        return self.config.get("FLAPI_JWT_AUTO_UPDATE", False)
 
     def _encode(
         self,

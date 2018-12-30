@@ -45,26 +45,26 @@ class BuilderTest(unittest.TestCase):
         self.assertIsInstance(data["exp"], float)
 
     def test_encode_with_issuer(self):
-        self.handler.app.config["FLAPI_JWT_ISSUER"] = "some_issuer"
+        self.handler.config["FLAPI_JWT_ISSUER"] = "some_issuer"
         data = self.jwt
         self.handler._encode(data)
         self.assertEqual(data["iss"], "some_issuer")
 
     def test_encode_with_issuer_already_in_token(self):
-        self.handler.app.config["FLAPI_JWT_ISSUER"] = "some_issuer"
+        self.handler.config["FLAPI_JWT_ISSUER"] = "some_issuer"
         data = self.jwt
         data["iss"] = "some_other_issuer"
         self.handler._encode(data)
         self.assertEqual(data["iss"], "some_other_issuer")
 
     def test_encode_with_audience(self):
-        self.handler.app.config["FLAPI_JWT_AUDIENCE"] = "some_audience"
+        self.handler.config["FLAPI_JWT_AUDIENCE"] = "some_audience"
         data = self.jwt
         self.handler._encode(data)
         self.assertEqual(data["aud"], "some_audience")
 
     def test_encode_with_audience_already_in_token(self):
-        self.handler.app.config["FLAPI_JWT_AUDIENCE"] = "some_audience"
+        self.handler.config["FLAPI_JWT_AUDIENCE"] = "some_audience"
         data = self.jwt
         data["aud"] = "some_other_audience"
         self.handler._encode(data)
@@ -87,8 +87,8 @@ class BuilderTest(unittest.TestCase):
         data = self.jwt
 
         self.app.config["FLAPI_JWT_LIFESPAN"] = 10
-        self.handler.app.config["FLAPI_JWT_ISSUER"] = "some_issuer"
-        self.handler.app.config["FLAPI_JWT_AUDIENCE"] = "some_audience"
+        self.handler.config["FLAPI_JWT_ISSUER"] = "some_issuer"
+        self.handler.config["FLAPI_JWT_AUDIENCE"] = "some_audience"
         self.handler._encode(data, not_before=12.3)
 
         expected = {
@@ -107,14 +107,14 @@ class BuilderTest(unittest.TestCase):
         )
 
     def test_decode_with_invalid_issuer(self):
-        self.handler.app.config["FLAPI_JWT_ISSUER"] = "some_issuer"
+        self.handler.config["FLAPI_JWT_ISSUER"] = "some_issuer"
         data = self.jwt
         data["iss"] = "nope"
         token = self.encode(data)
         self.assertRaises(self.FakeError, self.handler._decode, token)
 
     def test_decode_with_invalid_audience(self):
-        self.handler.app.config["FLAPI_JWT_ISSUER"] = "some_issuer"
+        self.handler.config["FLAPI_JWT_ISSUER"] = "some_issuer"
         data = self.jwt
         data["aud"] = "nope"
         token = self.encode(data)

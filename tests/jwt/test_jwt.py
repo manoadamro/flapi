@@ -67,7 +67,7 @@ class JwtTest(unittest.TestCase):
         )
 
     def test_post_request_callback(self):
-        self.handler.app.config["FLAPI_JWT_AUTO_UPDATE"] = False
+        self.handler.config["FLAPI_JWT_AUTO_UPDATE"] = False
         response = flask.Response()
         with self.app.app_context():
             self.assertEqual(self.handler._after_request(response), response)
@@ -81,7 +81,7 @@ class JwtTest(unittest.TestCase):
         with self.app.app_context(), unittest.mock.patch.object(
             self.handler, "_encode", lambda x: "I am a token"
         ):
-            self.handler.app.config["FLAPI_JWT_AUTO_UPDATE"] = True
+            self.handler.config["FLAPI_JWT_AUTO_UPDATE"] = True
             self.handler._jwt_store.set({"thing": True})
             response = self.handler._after_request(flask.Response())
 
