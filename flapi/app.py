@@ -8,9 +8,9 @@ from . import jwt, route, schema
 class App(flask.Flask):
     def __init__(self, *args, jwt_handler=None, **kwargs):
         super(App, self).__init__(*args, **kwargs)
-        self.jwt_handler = self._resolve_jwt_handler(jwt_handler)
+        self.jwt_handler = self._create_jwt_handler(jwt_handler)
 
-    def _resolve_jwt_handler(self, jwt_handler):
+    def _create_jwt_handler(self, jwt_handler):
         if jwt_handler is True:
             return jwt.JwtHandler(app=self)
         if jwt_handler is not None:

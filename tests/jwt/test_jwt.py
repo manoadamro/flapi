@@ -15,10 +15,10 @@ class JwtTest(unittest.TestCase):
 
     def setUp(self):
         self.app = flask.Flask(__name__)
+        self.app.config["FLAPI_JWT_SECRET"] = self.secret
+        self.app.config["FLAPI_JWT_LIFESPAN"] = self.lifespan
+        self.app.config["FLAPI_JWT_ALGORITHM"] = self.algorithm
         self.handler = JwtHandler(self.app)
-        self.handler.secret = self.secret
-        self.handler.lifespan = self.lifespan
-        self.handler.algorithm = self.algorithm
         self.handler.validation_error = self.FakeError
 
     @property
@@ -67,7 +67,7 @@ class JwtTest(unittest.TestCase):
         )
 
     def test_post_request_callback(self):
-        self.handler.app.config["JWT_AUTO_UPDATE"] = False
+        self.handler.app.config["FLAPI_JWT_AUTO_UPDATE"] = False
         response = flask.Response()
         with self.app.app_context():
             self.assertEqual(self.handler.after_request(response), response)
@@ -81,7 +81,7 @@ class JwtTest(unittest.TestCase):
         with self.app.app_context(), unittest.mock.patch.object(
             self.handler, "_encode", lambda x: "I am a token"
         ):
-            self.handler.app.config["JWT_AUTO_UPDATE"] = True
+            self.handler.app.config["FLAPI_JWT_AUTO_UPDATE"] = True
             self.handler._jwt_store.set({"thing": True})
             response = self.handler.after_request(flask.Response())
 
@@ -125,13 +125,5 @@ class JwtTest(unittest.TestCase):
         self.assertEqual(token["scp"], scopes)
 
     def test_raises_error_if_secret_not_set(self):
-        self.handler.secret = None
-        self.assertRaises(ValueError, self.handler.on_setup)
-
-    def test_raises_error_if_lifespan_not_set(self):
-        self.handler.lifespan = None
-        self.assertRaises(ValueError, self.handler.on_setup)
-
-    def test_raises_error_if_algorithm_not_set(self):
-        self.handler.algorithm = None
+        self.app.config["FLAPI_JWT_SECRET"] = None
         self.assertRaises(ValueError, self.handler.on_setup)

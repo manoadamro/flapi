@@ -8,10 +8,10 @@ jwt_handler = JwtHandler()
 
 
 class ApiConfig(Config):
-    JWT_SECRET = "secret"
-    JWT_LIFESPAN = 10
-    JWT_ALGORITHM = "HS256"
-    JWT_AUTO_UPDATE = True
+    FLAPI_JWT_SECRET = "secret"
+    FLAPI_JWT_LIFESPAN = 10
+    FLAPI_JWT_ALGORITHM = "HS256"
+    FLAPI_JWT_AUTO_UPDATE = True
 
 
 @blueprint.route("/token", methods=["GET"])
