@@ -6,9 +6,8 @@ import setuptools
 NAME = 'flapi'
 VERSION = '0.0.0'
 REQUIRES = [
-    'flask',
-    'pyjwt',
-    'jsonpointer'
+    'flapi-jwt @ https://github.com/manoadamro/flapi-jwt/tarball/master#egg=flapi-jwt',
+    'flapi-schema @ https://github.com/manoadamro/flapi-schema/tarball/master#egg=flapi-schema',
 ]
 
 
